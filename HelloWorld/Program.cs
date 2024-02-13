@@ -4,12 +4,19 @@ using Dapper;
 using HelloWorld.Data;
 using HelloWorld.Models;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace HelloWorld{
     internal class Program{
         static void Main(string[] args){
+            // for accessing the database string from the config file
+            IConfiguration config = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .Build();
             
-           DataContextDapper dapper = new DataContextDapper();
+           /////////////////////////////////////////// USING DAPPER ////////////////////////////////////
+           DataContextDapper dapper = new DataContextDapper(config);
 
            DateTime rightNow = dapper.LoadDataSingle<DateTime>("SELECT GETDATE()");
 
@@ -50,19 +57,54 @@ namespace HelloWorld{
             Computer.VideoCard
             FROM TutorialAppSchema.Computer";
 
+           
+
             // executing query to get the data
            IEnumerable<Computer> computers = dapper.LoadData<Computer>(sqlSelect);
           
             foreach(Computer singleComputer in computers){
-                Console.WriteLine(singleComputer.MotherBoard);
-                Console.WriteLine(singleComputer.HasWifi);
-                Console.WriteLine(singleComputer.HasLTE);
-                Console.WriteLine(singleComputer.ReleaseDate);
-                Console.WriteLine(singleComputer.Price);
-                Console.WriteLine(singleComputer.VideoCard);
+                Console.WriteLine("ID: " + singleComputer.ComputerId + ',' + 
+                    "Motherboard: " + singleComputer.MotherBoard + ',' + 
+                    "Wifi: " + singleComputer.HasWifi + ',' +
+                    "LTE: " + singleComputer.HasLTE + ',' +
+                    "ReleaseDate: " + singleComputer.ReleaseDate + ',' +
+                    "Price: " + singleComputer.Price + ',' +
+                    "VideoCard: " + singleComputer.VideoCard);
+            }
 
 
+             ////////////////////////////////////////////////USING ENTITY FRAMEWORK///////////////////////////////////////////
+            
+            DataContextEntityFramework entityFramework = new DataContextEntityFramework(config);
+
+            Computer Computer2 = new Computer(){
+                MotherBoard = "1234",
+                HasWifi = true,
+                HasLTE = false,
+                ReleaseDate = DateTime.Now,
+                Price = 943.43m,
+                VideoCard = "RTX 2860"
+            };
+
+            // adds the new computer to the table 
+            entityFramework.Add(Computer2);
+            entityFramework.SaveChanges();
+
+            IEnumerable<Computer>? computersEntityFramework = entityFramework.Computer?.ToList<Computer>();
+            
+            if(computersEntityFramework != null){
+                foreach(Computer singleComputer in computersEntityFramework){
+                    Console.WriteLine("ID: " + singleComputer.ComputerId + ',' + 
+                        "Motherboard: " + singleComputer.MotherBoard + ',' + 
+                        "Wifi: " + singleComputer.HasWifi + ',' +
+                        "LTE: " + singleComputer.HasLTE + ',' +
+                        "ReleaseDate: " + singleComputer.ReleaseDate + ',' +
+                        "Price: " + singleComputer.Price + ',' +
+                        "VideoCard: " + singleComputer.VideoCard);
+
+                }
             }
         }
+
     }
 }
