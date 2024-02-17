@@ -70,3 +70,4 @@ C:\Users\Omar Khan\dotnet-practice\HelloWorld\bin\Debug\net8.0\Microsoft.Extensi
 C:\Users\Omar Khan\dotnet-practice\HelloWorld\bin\Debug\net8.0\Microsoft.Extensions.FileProviders.Physical.dll
 C:\Users\Omar Khan\dotnet-practice\HelloWorld\bin\Debug\net8.0\Microsoft.Extensions.FileSystemGlobbing.dll
 C:\Users\Omar Khan\dotnet-practice\HelloWorld\bin\Debug\net8.0\appsettings.json
+C:\Users\Omar Khan\dotnet-practice\HelloWorld\bin\Debug\net8.0\Newtonsoft.Json.dll

@@ -29,6 +29,12 @@ public class DataContextDapper{
         IDbConnection dbConnection = new SqlConnection(_connectionString);
         return (dbConnection.Execute(sql) > 0);
     }
+
+    public bool ExecuteSql(string sql, object param = null){
+    IDbConnection dbConnection = new SqlConnection(_connectionString);
+    return (dbConnection.Execute(sql, param) > 0);
+}
+
     // returns the number of rows if the sql code runs
     public int ExecuteSqlWithRowCount(string sql){
         IDbConnection dbConnection = new SqlConnection(_connectionString);

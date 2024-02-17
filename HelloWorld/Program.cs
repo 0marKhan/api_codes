@@ -1,11 +1,16 @@
-﻿using System.Data;
+﻿using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
+using System.Text.Json;
+using AutoMapper;
 using Dapper;
 using HelloWorld.Data;
 using HelloWorld.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace HelloWorld{
     internal class Program{
@@ -18,92 +23,63 @@ namespace HelloWorld{
            /////////////////////////////////////////// USING DAPPER ////////////////////////////////////
            DataContextDapper dapper = new DataContextDapper(config);
 
-           DateTime rightNow = dapper.LoadDataSingle<DateTime>("SELECT GETDATE()");
+            // READING FROM JSON FILE AND ADDING TO DATABASE
+            string computerJson = File.ReadAllText("Computers.json");
+            Mapper mapper = new Mapper(new MapperConfiguration((cfg) =>{
+                
+            }));
 
-            // querying the database for date
-            // string sqlCommand = "SELECT GETDATE()";
-            // DateTime rightNow = dbConnection.QuerySingle<DateTime>(sqlCommand);
-            // Console.WriteLine(rightNow);
 
-            Computer myComputer = new Computer(){
-                MotherBoard = "1234",
-                HasWifi = true,
-                HasLTE = false,
-                ReleaseDate = DateTime.Now,
-                Price = 943.43m,
-                VideoCard = "RTX 2860"
-            };
+        //     IEnumerable<Computer>? jsonComputers = JsonConvert.DeserializeObject<IEnumerable<Computer>>(computerJson);
+            
+        //     if (jsonComputers != null)
+        //     {
+        //         string sql = @"INSERT INTO TutorialAppSchema.Computer (
+        //             MotherBoard,
+        //             HasWifi,
+        //             HasLTE,
+        //             ReleaseDate,
+        //             Price,
+        //             VideoCard
+        //         ) VALUES (
+        //             @MotherBoard,
+        //             @HasWifi,
+        //             @HasLTE,
+        //             @ReleaseDate,
+        //             @Price,
+        //             @VideoCard
+        //         )";
 
-            // query to add something
-            string sql = @"INSERT INTO TutorialAppSchema.Computer (
-                MotherBoard,
-                HasWifi,
-                HasLTE,
-                ReleaseDate,
-                Price,
-                VideoCard
-            ) VALUES ('1234', 'true', 'false','1/16/2024 5:17pm', '943.43', 'RTX 2060')";
+        //         foreach (Computer computer in jsonComputers)
+        //         {
+        //             dapper.ExecuteSql(sql, new {
+        //                 MotherBoard = computer.MotherBoard,
+        //                 HasWifi = computer.HasWifi,
+        //                 HasLTE = computer.HasLTE,
+        //                 ReleaseDate = computer.ReleaseDate,
+        //                 Price = computer.Price,
+        //                 VideoCard = computer.VideoCard
+        //             });
+        //         }
+        //     }
 
-            // if i wanna get the row count
-            // int result = dapper.ExecuteSqlWithRowCount(sql);
-            bool result = dapper.ExecuteSql(sql);
+        //     // ADDING JSON TO TEXT FILE
+        //     // serializing, converting to camel case for json
+        //     JsonSerializerSettings settings = new(){
+        //         ContractResolver = new CamelCasePropertyNamesContractResolver()
+        //     };
 
-            string sqlSelect = @"SELECT 
-            Computer.MotherBoard,
-            Computer.HasWifi,
-            Computer.HasLTE,
-            Computer.ReleaseDate,
-            Computer.Price,
-            Computer.VideoCard
-            FROM TutorialAppSchema.Computer";
+        //     string computersCopyNewtonssoft = JsonConvert.SerializeObject(jsonComputers, settings);
+        //     File.WriteAllText("computersCopyNewtonssoft.txt", computersCopyNewtonssoft);
 
            
 
-            // executing query to get the data
-           IEnumerable<Computer> computers = dapper.LoadData<Computer>(sqlSelect);
-          
-            foreach(Computer singleComputer in computers){
-                Console.WriteLine("ID: " + singleComputer.ComputerId + ',' + 
-                    "Motherboard: " + singleComputer.MotherBoard + ',' + 
-                    "Wifi: " + singleComputer.HasWifi + ',' +
-                    "LTE: " + singleComputer.HasLTE + ',' +
-                    "ReleaseDate: " + singleComputer.ReleaseDate + ',' +
-                    "Price: " + singleComputer.Price + ',' +
-                    "VideoCard: " + singleComputer.VideoCard);
-            }
+      
+        // }
 
-
-             ////////////////////////////////////////////////USING ENTITY FRAMEWORK///////////////////////////////////////////
-            
-            DataContextEntityFramework entityFramework = new DataContextEntityFramework(config);
-
-            Computer Computer2 = new Computer(){
-                MotherBoard = "1234",
-                HasWifi = true,
-                HasLTE = false,
-                ReleaseDate = DateTime.Now,
-                Price = 943.43m,
-                VideoCard = "RTX 2860"
-            };
-
-            // adds the new computer to the table 
-            entityFramework.Add(Computer2);
-            entityFramework.SaveChanges();
-
-            IEnumerable<Computer>? computersEntityFramework = entityFramework.Computer?.ToList<Computer>();
-            
-            if(computersEntityFramework != null){
-                foreach(Computer singleComputer in computersEntityFramework){
-                    Console.WriteLine("ID: " + singleComputer.ComputerId + ',' + 
-                        "Motherboard: " + singleComputer.MotherBoard + ',' + 
-                        "Wifi: " + singleComputer.HasWifi + ',' +
-                        "LTE: " + singleComputer.HasLTE + ',' +
-                        "ReleaseDate: " + singleComputer.ReleaseDate + ',' +
-                        "Price: " + singleComputer.Price + ',' +
-                        "VideoCard: " + singleComputer.VideoCard);
-
-                }
-            }
+        static string EscapeSingleQuote(string input){
+            string output = input.Replace("'", "''");
+            return output;
         }
 
     }

@@ -1,0 +1,15 @@
+INSERT INTO TutorialAppSchema.Computer (
+                MotherBoard,
+                HasWifi,
+                HasLTE,
+                ReleaseDate,
+                Price,
+                VideoCard
+            ) VALUES ('1234', 'true', 'false','1/16/2024 5:17pm', '943.43', 'RTX 2060')INSERT INTO TutorialAppSchema.Computer (
+                MotherBoard,
+                HasWifi,
+                HasLTE,
+                ReleaseDate,
+                Price,
+                VideoCard
+            ) VALUES ('1234', 'true', 'false','1/16/2024 5:17pm', '943.43', 'RTX 2060')
