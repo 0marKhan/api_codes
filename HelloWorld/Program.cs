@@ -24,14 +24,41 @@ namespace HelloWorld{
            DataContextDapper dapper = new DataContextDapper(config);
 
             // READING FROM JSON FILE AND ADDING TO DATABASE
-            string computerJson = File.ReadAllText("Computers.json");
+            string computerJson = File.ReadAllText("ComputersSnake.json");
+
+            // mapping from ComputerSnake to Computer
+            // adds it automatically to ComputerId
             Mapper mapper = new Mapper(new MapperConfiguration((cfg) =>{
-                
+                cfg.CreateMap<ComputerSnake, Computer>()
+                    // making it so ComputerId maps to computer_id
+                    .ForMember(destination => destination.ComputerId, options =>
+                        options.MapFrom(source => source.computer_id))
+                    .ForMember(destination => destination.CPUcores, options =>
+                        options.MapFrom(source => source.cpu_cores))
+                    .ForMember(destination => destination.HasLTE, options =>
+                        options.MapFrom(source => source.has_lte))
+                    .ForMember(destination => destination.MotherBoard, options =>
+                        options.MapFrom(source => source.motherboard))
+                    .ForMember(destination => destination.VideoCard, options =>
+                        options.MapFrom(source => source.video_card))
+                    .ForMember(destination => destination.ReleaseDate, options =>
+                        options.MapFrom(source => source.release_date))
+                    .ForMember(destination => destination.Price, options =>
+                        options.MapFrom(source => source.price));
             }));
 
+            // Deserialize JSON into a collection of Computer objects
+            IEnumerable<Computer>? computerSystem = System.Text.Json.JsonSerializer.Deserialize<IEnumerable<Computer>>(computerJson);
 
-        //     IEnumerable<Computer>? jsonComputers = JsonConvert.DeserializeObject<IEnumerable<Computer>>(computerJson);
+ 
             
+            if(computerSystem != null){
+                foreach (Computer computer in computerSystem){
+                    Console.WriteLine(computer.MotherBoard);
+                }           
+            }
+
+
         //     if (jsonComputers != null)
         //     {
         //         string sql = @"INSERT INTO TutorialAppSchema.Computer (
@@ -76,11 +103,12 @@ namespace HelloWorld{
 
       
         // }
-
+        }
         static string EscapeSingleQuote(string input){
             string output = input.Replace("'", "''");
             return output;
         }
 
     }
+    
 }
